@@ -39,6 +39,14 @@ def make_vasp(argv):
                         default=40, dest='cpn',
                         help='The cores per node on the desired submit cluster (default=40 for IRIDIS5)')
 
+    parser.add_argument('--kpo_num',
+                        default=1, dest='kpo_num',
+                        help='The kpoint grid to use the default is just the gamma point.')
+
+    parser.add_argument('--perfopts',
+                        action='store_true', dest='perfopts',
+                        help='Whether or not to add performance optimizers, useful for (AND ONLY FOR) large systems')
+
     args = parser.parse_args(argv)
 
     if args.potcar:
@@ -53,12 +61,15 @@ def make_vasp(argv):
         pass
 
     if args.kpoints:
-        with open(os.curdir + "/KPOINTS", "w+") as outfile:
-            outfile.write(gen_gamma_kpoint())
+            with open(os.curdir + "/KPOINTS", "w+") as outfile:
+                outfile.write(gen_gamma_kpoint(num=args.kpo_num))
+
+
 
     if args.incar:
         s = get_simple_incar(args.poscar, magmom=True, u=True)
-        s = s + incar_add_perfopt(cpn=40)
+        if args.perfopts:
+            s = s + incar_add_perfopt(cpn=args.cpn)
         with open(os.curdir + "/INCAR", "w+") as outfile:
             outfile.write(s)
 
