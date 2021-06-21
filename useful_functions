@@ -1,0 +1,12 @@
+"""Planning on adding useful functions here"""
+
+def movie_split(inputfile):
+    """ Split nebresults movie file into a list of individual POSCAR strings. Ready to be read by ase/pmg"""
+    with open(inputfile) as f:
+        data = "".join(line for line in f)
+    with open(inputfile) as f:
+        title = "".join(f.readlines()[0:8])
+
+    s = data.split(sep=title)[1:]
+    s = [title + x for x in s]
+    return s
